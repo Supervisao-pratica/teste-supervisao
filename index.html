@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Portal do Supervisor da Prática - Senac PR</title>
+    <title>Portal da Supervisão da Prática - Senac PR</title>
     
     <!-- Ícones (FontAwesome) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -23,6 +23,8 @@
             --text-color: #374151;
             --border-color: #e5e7eb;
             --white: #ffffff;
+            --whatsapp-green: #25D366;
+            --whatsapp-dark: #075E54;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -352,6 +354,87 @@
         .mobile-menu-dropdown { display: none; background: #f9fafb; border-top: 1px solid #eee; }
         .mobile-link { display: block; padding: 12px 20px; color: var(--senac-blue); font-weight: 600; border-bottom: 1px solid #eee; width: 100%; text-align: left;}
 
+        /* =========================================
+           CHATBOT (NOVO)
+           ========================================= */
+        .chatbot-trigger {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 60px; height: 60px;
+            background-color: var(--whatsapp-green);
+            color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            cursor: pointer; z-index: 10000;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: pulse 2s infinite;
+        }
+        .chatbot-trigger:hover { transform: scale(1.1); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        
+        .chatbot-window {
+            position: fixed; bottom: 100px; right: 30px;
+            width: 350px; height: 500px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 10001;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            opacity: 0; visibility: hidden; transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        .chatbot-window.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        
+        .chat-header {
+            background-color: var(--whatsapp-dark); color: white;
+            padding: 15px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .chat-header h4 { font-size: 1rem; margin: 0; }
+        .chat-header span { font-size: 0.75rem; opacity: 0.8; }
+        .close-chat { cursor: pointer; font-size: 1.2rem; }
+        
+        .chat-body {
+            flex-grow: 1; padding: 15px; background-color: #e5ddd5;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* Pattern WhatsApp */
+            overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+        }
+        
+        .chat-message {
+            max-width: 80%; padding: 10px 15px; border-radius: 10px;
+            font-size: 0.9rem; position: relative;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+        .msg-bot {
+            align-self: flex-start; background: white; border-top-left-radius: 0;
+        }
+        .msg-user {
+            align-self: flex-end; background: #dcf8c6; border-top-right-radius: 0;
+        }
+        .chat-time { display: block; font-size: 0.65rem; color: #999; text-align: right; margin-top: 4px; }
+        
+        /* Botão de Audio nas Mensagens */
+        .voice-btn {
+            display: inline-block; margin-left: 8px; color: var(--senac-blue); cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .voice-btn:hover { transform: scale(1.2); color: var(--senac-orange); }
+
+        .chat-options { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .chat-option-btn {
+            background: white; border: 1px solid var(--whatsapp-green);
+            color: var(--whatsapp-green); padding: 8px 12px;
+            border-radius: 20px; font-size: 0.85rem; font-weight: bold;
+            cursor: pointer; transition: 0.2s; text-align: center;
+        }
+        .chat-option-btn:hover { background: var(--whatsapp-green); color: white; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         @media (max-width: 1400px) {
             .timeline-art { width: 220px; }
             .timeline-art.art-1 { left: -250px; }
@@ -383,6 +466,8 @@
 
             .welcome-section { margin: 0; padding: 40px 10px; }
             .welcome-card::after { margin: 40px -20px -20px -20px; border-radius: 0 0 16px 16px; }
+            
+            .chatbot-window { width: 90%; right: 5%; bottom: 100px; height: 60%; }
         }
 
         /* --- VÍDEO RESPONSIVO (NOVO) --- */
@@ -434,13 +519,16 @@
                 <div class="logo-area">
                     <a href="#" onclick="switchTab('boas-vindas')" style="display: flex; align-items: center;">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Senac_logo.svg" alt="Logo">
-                        <span class="logo-text">Portal do Supervisor</span>
+                        <!-- ATUALIZADO: Texto do Logo -->
+                        <span class="logo-text">Portal da Supervisão</span>
                     </a>
                 </div>
                 <div class="nav-links">
                     <button onclick="switchTab('boas-vindas')" id="btn-boas-vindas" class="nav-btn active">Boas-Vindas</button>
                     <!-- REORDENADO: DADOS ANTES DE FLUXOGRAMA -->
                     <button onclick="switchTab('dados')" id="btn-dados" class="nav-btn">Dados</button>
+                    <!-- NOVA ABA: RATEIO -->
+                    <button onclick="switchTab('rateio')" id="btn-rateio" class="nav-btn">Rateio</button>
                     <button onclick="switchTab('fluxograma')" id="btn-fluxograma" class="nav-btn">Fluxograma</button>
                     <button onclick="switchTab('documentos')" id="btn-documentos" class="nav-btn">Documentos</button>
                     <button onclick="switchTab('equipe')" id="btn-equipe" class="nav-btn">Equipe</button>
@@ -454,8 +542,8 @@
             
             <div class="mobile-menu-dropdown" id="mobile-menu">
                 <button onclick="switchTab('boas-vindas')" class="mobile-link">Boas-Vindas</button>
-                <!-- REORDENADO: DADOS ANTES DE FLUXOGRAMA -->
                 <button onclick="switchTab('dados')" class="mobile-link">Dados</button>
+                <button onclick="switchTab('rateio')" class="mobile-link">Rateio</button>
                 <button onclick="switchTab('fluxograma')" class="mobile-link">Fluxograma</button>
                 <button onclick="switchTab('documentos')" class="mobile-link">Documentos</button>
                 <button onclick="switchTab('equipe')" class="mobile-link">Equipe</button>
@@ -597,8 +685,9 @@
                     <div class="step-number bg-orange">6</div>
                     <div class="step-content border-right-blue" onclick="openStepInfo(6)"><h3>Montar Logística</h3><p>Montar logística na aba de planejamento.</p></div>
                 </div>
+                <!-- PASSO 7 ATUALIZADO NO HTML -->
                 <div class="timeline-step">
-                    <div class="step-content border-left-orange" onclick="openStepInfo(7)"><h3>Aprovação</h3><p>Avisar ao Polo-PR e aguardar.</p></div>
+                    <div class="step-content border-left-orange" onclick="openStepInfo(7)"><h3>Aprovação</h3><p>Avisar ao Senac Portão - PR e aguardar.</p></div>
                     <div class="step-number">7</div> 
                     <div class="empty-space"></div>
                 </div>
@@ -730,49 +819,94 @@
                     <div class="empty-space"></div>
                 </div>
 
-                <!-- ETAPA 18: CONCLUSÃO (ANTIGA 17 - MOVIDA PARA DIREITA) -->
+                <!-- ETAPA 18: CONCLUSÃO (ANTIGA 17 - MOVIDA PARA DIREITA) ATUALIZADO NO HTML -->
                 <div class="timeline-step">
                     <div class="empty-space"></div>
                     <div class="step-number bg-green">18</div>
                     <div class="step-content border-right-orange" style="background-color: #eff6ff;" onclick="openStepInfo(18)">
                         <h3>Conclusão</h3>
-                        <p>Sinalizar ao Polo-PR.</p>
+                        <p>Sinalizar ao Senac Portão - PR.</p>
                         <p style="color: var(--senac-green); font-weight: bold; font-size: 0.75rem; text-transform: uppercase; margin-top: 5px;">Processo Finalizado</p>
                     </div>
                 </div>
             </div>
 
-            <!-- ABA: DADOS (DASHBOARD) - RESTAURADA PARA O TAMANHO ANTERIOR -->
+            <!-- ABA: DADOS (DASHBOARD) - ATUALIZADO PARA SITE GITHUB -->
             <div id="view-dados" class="hidden-section">
                 <div class="welcome-card" style="text-align: center;">
                     <i class="fas fa-chart-pie" style="font-size: 4rem; color: var(--senac-blue); margin-bottom: 20px;"></i>
-                    <h2 style="color: var(--senac-dark-blue); margin-bottom: 10px;">Painel de Dados</h2>
-                    <p style="color: #666; margin-bottom: 30px;">Total de Jovens Ativos por Região</p>
+                    <h2 style="color: var(--senac-dark-blue); margin-bottom: 10px;">Painel de Dados Gerais</h2>
+                    <p style="color: #666; margin-bottom: 30px;">Visão geral e indicadores de supervisão.</p>
                     
-                    <!-- ÁREA DE INCORPORAÇÃO (IFRAME) - Restaurado para 604x384 e sem os parâmetros de recorte -->
+                    <!-- ÁREA DE INCORPORAÇÃO (IFRAME) -->
                     <div style="display: flex; justify-content: center; overflow: hidden; background: #fafafa; border-radius: 8px; border: 1px solid #eee; padding: 20px;">
                         <iframe 
-                            width="604" 
-                            height="384" 
+                            width="100%" 
+                            height="600" 
                             frameborder="0" 
-                            scrolling="no" 
-                            style="max-width: 100%;" 
-                            src="https://senacpr-my.sharepoint.com/personal/michel_farias_pr_senac_br/_layouts/15/Doc.aspx?sourcedoc={8f2f76bc-bce9-4d13-9a15-4e652295c5d4}&action=embedview&wdAllowInteractivity=False&Item=Gr%C3%A1fico%201&wdHideSheetTabs=True">
+                            src="https://supervisao-pratica.github.io/Dados-Gerais/"
+                            style="max-width: 100%; border: none;">
                         </iframe>
                     </div>
 
-                    <!-- BOTÃO DE EMERGÊNCIA / PLANO B -->
+                    <!-- BOTÃO PARA ACESSAR O SITE -->
                     <div style="display: flex; justify-content: center; margin-top: 25px; border-top: 1px solid #ddd; padding-top: 20px;">
                         <div style="max-width: 600px;">
                             <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">
-                                <i class="fas fa-info-circle"></i> O gráfico não apareceu? Pode ser necessário permissão de acesso.
+                                <i class="fas fa-external-link-alt"></i> Prefere visualizar em tela cheia?
                             </p>
-                            <a href="https://senacpr-my.sharepoint.com/personal/michel_farias_pr_senac_br/_layouts/15/Doc.aspx?sourcedoc={8f2f76bc-bce9-4d13-9a15-4e652295c5d4}&action=embedview&wdAllowInteractivity=False&Item=Gr%C3%A1fico%201" target="_blank" class="btn-primary" style="display: inline-flex; width: auto; padding: 10px 25px; background-color: var(--senac-blue);">
-                                <i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> Abrir Gráfico em Nova Guia
+                            <a href="https://supervisao-pratica.github.io/Dados-Gerais/" target="_blank" class="btn-primary" style="display: inline-flex; width: auto; padding: 10px 25px; background-color: var(--senac-blue);">
+                                <i class="fas fa-chart-line" style="margin-right: 8px;"></i> Acessar Site de Dados
                             </a>
                         </div>
                     </div>
 
+                </div>
+            </div>
+
+            <!-- NOVA ABA: RATEIO (COM SENHA) -->
+            <div id="view-rateio" class="hidden-section">
+                <div class="welcome-card" style="text-align: center;">
+                    <!-- CONTEÚDO BLOQUEADO (FORMULÁRIO DE SENHA) -->
+                    <div id="rateio-lock-screen" style="max-width: 400px; margin: 0 auto; padding: 40px 0;">
+                        <i class="fas fa-lock" style="font-size: 4rem; color: var(--senac-orange); margin-bottom: 20px;"></i>
+                        <h2 style="color: var(--senac-dark-blue); margin-bottom: 10px;">Área Restrita: Rateio</h2>
+                        <p style="color: #666; margin-bottom: 30px;">Esta seção contém informações financeiras confidenciais. Por favor, insira a senha de acesso.</p>
+                        
+                        <form onsubmit="event.preventDefault(); checkRateioPassword();">
+                            <div class="password-container">
+                                <input type="password" id="rateio-password" class="password-input" placeholder="Senha do rateio..." required style="text-align: center;">
+                                <div id="rateio-error" class="error-msg" style="justify-content: center;"><i class="fas fa-exclamation-circle"></i> Senha incorreta.</div>
+                            </div>
+                            <button type="submit" class="btn-primary" style="background-color: var(--senac-blue);">
+                                <i class="fas fa-key"></i> Desbloquear Acesso
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- CONTEÚDO DESBLOQUEADO (IFRAME) -->
+                    <div id="rateio-content" style="display: none;">
+                        <h2 style="color: var(--senac-blue); margin-bottom: 10px;">Controle de Rateio</h2>
+                        <p style="color: #666; margin-bottom: 20px;">Painel financeiro de distribuição de custos.</p>
+                        
+                        <div style="display: flex; justify-content: center; overflow: hidden; background: #fafafa; border-radius: 8px; border: 1px solid #eee; padding: 20px;">
+                            <iframe 
+                                width="100%" 
+                                height="800" 
+                                frameborder="0" 
+                                src="https://supervisao-pratica.github.io/Rateio/"
+                                style="max-width: 100%; border: none;">
+                            </iframe>
+                        </div>
+
+                         <div style="display: flex; justify-content: center; margin-top: 25px; border-top: 1px solid #ddd; padding-top: 20px;">
+                            <div style="max-width: 600px;">
+                                <a href="https://supervisao-pratica.github.io/Rateio/" target="_blank" class="btn-primary" style="display: inline-flex; width: auto; padding: 10px 25px; background-color: var(--senac-green);">
+                                    <i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> Abrir em Nova Aba
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1022,6 +1156,24 @@
         </div>
     </div>
 
+    <!-- CHATBOT FLUTUANTE -->
+    <div id="chatbot-trigger" class="chatbot-trigger" onclick="toggleChat()">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+
+    <div id="chatbot-window" class="chatbot-window">
+        <div class="chat-header">
+            <div>
+                <h4>Assistente Virtual</h4>
+                <span>Online agora</span>
+            </div>
+            <div class="close-chat" onclick="toggleChat()">&times;</div>
+        </div>
+        <div id="chat-body" class="chat-body">
+            <!-- Mensagens aparecem aqui -->
+        </div>
+    </div>
+
     <script>
         const loginScreen = document.getElementById('login-screen');
         const siteContent = document.getElementById('site-content');
@@ -1029,6 +1181,9 @@
         const passwordInput = document.getElementById('password-input');
         const errorMsg = document.getElementById('error-msg');
         const SENHA_CORRETA = "senac2026";
+        
+        // VARIÁVEIS PARA A ABA RATEIO
+        let rateioUnlocked = false;
 
         function checkPassword() {
             if (passwordInput.value.toUpperCase() === SENHA_CORRETA.toUpperCase()) {
@@ -1042,12 +1197,34 @@
             }
         }
         passwordInput.addEventListener('input', () => { errorMsg.style.display = 'none'; passwordInput.classList.remove('error'); });
+        
+        // FUNÇÃO DE SEGURANÇA PARA ABA RATEIO
+        function checkRateioPassword() {
+            const rateioInput = document.getElementById('rateio-password');
+            const rateioError = document.getElementById('rateio-error');
+            
+            if (rateioInput.value === "rateio2026") {
+                rateioUnlocked = true;
+                document.getElementById('rateio-lock-screen').style.display = 'none';
+                document.getElementById('rateio-content').style.display = 'block';
+            } else {
+                rateioError.style.display = 'flex';
+                rateioInput.classList.add('error');
+                rateioInput.value = '';
+                rateioInput.focus();
+            }
+        }
+        document.getElementById('rateio-password').addEventListener('input', () => { 
+            document.getElementById('rateio-error').style.display = 'none'; 
+            document.getElementById('rateio-password').classList.remove('error'); 
+        });
 
         function showContent() {
             loginScreen.style.display = 'none';
             siteContent.classList.remove('hidden-section');
             body.classList.remove('locked');
             switchTab('boas-vindas');
+            document.getElementById('chatbot-trigger').style.display = 'flex'; // Exibe o chat apenas pós login
         }
 
         function logout() {
@@ -1056,12 +1233,16 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            if (localStorage.getItem('senac_auth') === 'true') { showContent(); }
-            else { passwordInput.focus(); }
+            if (localStorage.getItem('senac_auth') === 'true') { 
+                showContent(); 
+            } else { 
+                passwordInput.focus(); 
+                document.getElementById('chatbot-trigger').style.display = 'none'; // Esconde chat no login
+            }
         });
 
         function switchTab(tabName) {
-            ['boas-vindas', 'fluxograma', 'dados', 'documentos', 'equipe'].forEach(tab => {
+            ['boas-vindas', 'fluxograma', 'dados', 'rateio', 'documentos', 'equipe'].forEach(tab => {
                 document.getElementById('view-' + tab).classList.add('hidden-section');
                 document.getElementById('btn-' + tab).classList.remove('active');
             });
@@ -1072,12 +1253,18 @@
                 'boas-vindas': ["Bem-Vindo(a) Supervisor(a)!", "Portal de apoio para a supervisão da Prática Profissional do Senac PR."],
                 'fluxograma': ["Fluxo de Monitoramento", "Guia oficial para supervisão de práticas profissionais - Senac PR"],
                 'dados': ["Painel de Dados", "Monitoramento em tempo real dos indicadores de aprendizagem."],
+                'rateio': ["Controle de Rateio", "Área restrita para gestão financeira de custos."],
                 'documentos': ["Central de Documentos", "Baixe todos os arquivos necessários."],
                 'equipe': ["Equipe Técnica", "Contatos e responsáveis pedagógicos."]
             };
             document.getElementById('hero-title').innerText = titles[tabName][0];
             document.getElementById('hero-subtitle').innerText = titles[tabName][1];
             document.getElementById('mobile-menu').style.display = 'none';
+            
+            // SE A ABA FOR RATEIO, FOCA NO INPUT SE NÃO ESTIVER DESBLOQUEADO
+            if (tabName === 'rateio' && !rateioUnlocked) {
+                setTimeout(() => document.getElementById('rateio-password').focus(), 100);
+            }
         }
 
         function toggleMobileMenu() {
@@ -1320,7 +1507,7 @@
             7: {
                 title: "Aprovação da Agenda",
                 subtitle: "Fase 2: Validação",
-                text: "Após montar o roteiro preliminar, sinalize para o Polo-PR e Polo atuante e aguarde o 'De Acordo' antes de prosseguir com as visitas."
+                text: "Após montar o roteiro preliminar, sinalize para o Senac Portão - PR e Polo atuante e aguarde o 'De Acordo' antes de prosseguir com as visitas."
             },
             8: {
                 title: "Abertura de Viagem",
@@ -1388,7 +1575,7 @@
                     </div>
 
                     <p style="margin-top: 20px;"><strong>Após concluir o preenchimento:</strong></p>
-                    <p>Sinalize o Polo-PR para que as informações sejam conferidas e, posteriormente, enviadas por e-mail ao supervisor e ao polo participante.</p>
+                    <p>Sinalize o Senac Portão - PR para que as informações sejam conferidas e, posteriormente, enviadas por e-mail ao supervisor e ao polo participante.</p>
                 `
             },
             17: {
@@ -1427,7 +1614,7 @@
             18: {
                 title: "Conclusão do Ciclo",
                 subtitle: "Fase 4: Fechamento",
-                text: "Com todos os passos anteriores concluídos, sinalize ao Polo-PR o fechamento do ciclo de visitas do mês. O processo está finalizado!"
+                text: "Com todos os passos anteriores concluídos, sinalize ao Senac Portão - PR o fechamento do ciclo de visitas do mês. O processo está finalizado!"
             }
         };
 
@@ -1458,6 +1645,236 @@
             }
              if (e.target === this) closeStepInfo();
         });
+
+        // ===========================================
+        // LÓGICA DO CHATBOT (ATUALIZADA)
+        // ===========================================
+        const chatWindow = document.getElementById('chatbot-window');
+        const chatBody = document.getElementById('chat-body');
+        let chatStarted = false;
+
+        function toggleChat() {
+            chatWindow.classList.toggle('active');
+            if (chatWindow.classList.contains('active') && !chatStarted) {
+                startChat();
+                chatStarted = true;
+            }
+        }
+
+        function startChat() {
+            addMessage('Olá, Supervisor(a)! 👋', 'bot');
+            setTimeout(() => {
+                addMessage('Sou o assistente virtual do Portal. Como posso te ajudar hoje?', 'bot');
+                showOptions([
+                    { id: 'docs', text: 'Baixar Documentos' },
+                    { id: 'planilha', text: 'Dúvidas Planilha' },
+                    { id: 'prazos', text: 'Prazos e Entregas' },
+                    { id: 'fluxo', text: 'Fluxograma' },
+                    { id: 'contatos', text: 'Contatos da Equipe' },
+                    { id: 'update_sup', text: 'Atualização Supervisor' },
+                    { id: 'humano', text: 'Falar com Suporte' }
+                ]);
+            }, 800);
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `chat-message msg-${sender}`;
+            
+            // Hora atual
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            
+            // Texto limpo para leitura (remove tags HTML)
+            const cleanText = text.replace(/<[^>]*>?/gm, '');
+
+            let contentHTML = `${text} <span class="chat-time">${time}</span>`;
+            
+            // Adiciona botão de voz apenas nas mensagens do bot
+            if (sender === 'bot') {
+                contentHTML += `<i class="fas fa-volume-up voice-btn" onclick="speak('${cleanText.replace(/'/g, "\\'")}')" title="Ouvir mensagem"></i>`;
+            }
+
+            div.innerHTML = contentHTML;
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // Função de Fala (Text-to-Speech)
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                // Cancela fala anterior se houver
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 1.1; // Velocidade um pouco mais rápida que o padrão
+                utterance.pitch = 1;
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Desculpe, seu navegador não suporta leitura de texto.");
+            }
+        }
+
+        function showOptions(options) {
+            const div = document.createElement('div');
+            div.className = 'chat-options';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'chat-option-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleOption(opt.id, opt.text, div);
+                div.appendChild(btn);
+            });
+            
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function handleOption(id, text, optionsContainer) {
+            // Remove as opções antigas
+            optionsContainer.remove(); 
+            
+            // Mostra o que o usuário escolheu
+            addMessage(text, 'user');
+
+            // Resposta do Robô com delay
+            setTimeout(() => {
+                if (id === 'docs') {
+                    addMessage('Para baixar documentos, acesse a aba <strong>"Documentos"</strong> no menu superior ou siga o Passo 3 do Fluxograma.', 'bot');
+                    addMessage('Lá você encontra manuais, formulários e listas de verificação.', 'bot');
+                } 
+                else if (id === 'planilha') {
+                    addMessage('Lembre-se: Para as macros funcionarem, você deve abrir a planilha no <strong>Excel Desktop</strong>.', 'bot');
+                    addMessage('Se estiver com erro de permissão, verifique se está logado com sua conta institucional @pr.senac.br.', 'bot');
+                }
+                else if (id === 'prazos') {
+                    addMessage('Os relatórios mensais devem ser enviados até o dia 25 de cada mês.', 'bot');
+                    addMessage('Não se esqueça de sinalizar o Polo-PR assim que concluir a Fase 4.', 'bot');
+                }
+                else if (id === 'humano') {
+                    addMessage('Entendi. Você pode falar diretamente com o suporte técnico pelo WhatsApp abaixo:', 'bot');
+                    const link = document.createElement('div');
+                    link.className = 'chat-options';
+                    link.innerHTML = `<a href="https://wa.me/554133145817" target="_blank" class="chat-option-btn" style="text-decoration:none; display:block;">Chamar no WhatsApp Oficial <i class="fas fa-external-link-alt"></i></a>`;
+                    chatBody.appendChild(link);
+                    return; 
+                }
+                else if (id === 'contatos') {
+                    addMessage('Aqui estão os contatos diretos da nossa equipe:', 'bot');
+                    const contactsDiv = document.createElement('div');
+                    contactsDiv.className = 'chat-options';
+                    
+                    const team = [
+                        { name: "Ana Paula", phone: "554133145814" },
+                        { name: "Bianca Aresta", phone: "554133145875" },
+                        { name: "Bruna Cunha", phone: "554133145816" },
+                        { name: "Mariana Mello", phone: "554133145858" },
+                        { name: "Cristina Maciel", phone: "554133145840" },
+                        { name: "Leo Santos", phone: "554133145818" }
+                    ];
+
+                    let html = '';
+                    team.forEach(member => {
+                        html += `<a href="https://wa.me/${member.phone}" target="_blank" class="chat-option-btn" style="text-decoration:none; display:block; margin-bottom:5px;">${member.name} <i class="fab fa-whatsapp"></i></a>`;
+                    });
+                    contactsDiv.innerHTML = html;
+                    chatBody.appendChild(contactsDiv);
+                    // Retorna após mostrar contatos, mas oferece menu novamente após um tempo
+                }
+                else if (id === 'update_sup') {
+                    addMessage('Abrindo seu gerenciador de e-mails com os dados para envio...', 'bot');
+                    const email = "cristina.maciel@pr.senac.br";
+                    const subject = "Atualização Cadastral Supervisor Empresa";
+                    const body = `Solicitamos, por gentileza, os dados da nova supervisão responsável pela(o) jovem aprendiz:%0D%0A%0D%0ADados da Supervisão%0D%0A%0D%0ANome completo:%0D%0ACPF:%0D%0ATelefone fixo:%0D%0ATelefone celular:%0D%0AE-mail:%0D%0A%0D%0AApós o envio das informações, será solicitado o acesso à Plataforma Blackboard – Canal do Supervisor, meio pelo qual são enviados os documentos de acompanhamento dos jovens aprendizes.`;
+                    
+                    window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${body}`, '_blank');
+                }
+                else if (id === 'fluxo') {
+                    addMessage('O Fluxograma é o guia oficial. Sobre qual fase você tem dúvida?', 'bot');
+                    showOptions([
+                        { id: 'fase1', text: 'Fase 1: Acesso & Planejamento' },
+                        { id: 'fase2', text: 'Fase 2: Logística' },
+                        { id: 'fase3', text: 'Fase 3: Execução' },
+                        { id: 'fase4', text: 'Fase 4: Finalização' }
+                    ]);
+                    return; // Interrompe para não mostrar menu principal
+                }
+                // SUB-OPÇÕES DO FLUXO
+                else if (id === 'fase1') {
+                     addMessage('Fase 1: Selecione a etapa para ver detalhes:', 'bot');
+                     showOptions([
+                        { id: 'step_1', text: '1. Seleção Região' },
+                        { id: 'step_2', text: '2. Macros/Desktop' },
+                        { id: 'step_3', text: '3. Download Docs' },
+                        { id: 'step_4', text: '4. Planilha Planejamento' },
+                        { id: 'step_5', text: '5. Configuração' }
+                     ]);
+                     return;
+                }
+                else if (id === 'fase2') {
+                     addMessage('Fase 2: Selecione a etapa:', 'bot');
+                     showOptions([
+                        { id: 'step_6', text: '6. Montar Logística' },
+                        { id: 'step_7', text: '7. Aprovação' },
+                        { id: 'step_8', text: '8. Abertura Viagem' },
+                        { id: 'step_9', text: '9. Confirmação' }
+                     ]);
+                     return;
+                }
+                else if (id === 'fase3') {
+                     addMessage('Fase 3: Selecione a etapa:', 'bot');
+                     showOptions([
+                        { id: 'step_10', text: '10. Formulário/ATA' },
+                        { id: 'step_11', text: '11. Preenchimento' },
+                        { id: 'step_12', text: '12. Relatório Desempenho' },
+                        { id: 'step_13', text: '13. Entrevista' }
+                     ]);
+                     return;
+                }
+                else if (id === 'fase4') {
+                     addMessage('Fase 4: Selecione a etapa:', 'bot');
+                     showOptions([
+                        { id: 'step_14', text: '14. Digitalizar' },
+                        { id: 'step_15', text: '15. Registro' },
+                        { id: 'step_16', text: '16. Rateio' },
+                        { id: 'step_17', text: '17. Malote' },
+                        { id: 'step_18', text: '18. Conclusão' }
+                     ]);
+                     return;
+                }
+                // TRATAMENTO DE ETAPAS ESPECÍFICAS
+                else if (id.startsWith('step_')) {
+                    const stepNum = id.split('_')[1];
+                    const data = stepData[stepNum];
+                    if (data) {
+                        // Resposta com título e um trecho do texto (remove HTML para ficar limpo no chat, ou mantém HTML simples)
+                        // Para o chat, vamos simplificar removendo tags complexas
+                        let simpleText = data.text.replace(/<[^>]*>?/gm, ' '); // Remove tags
+                        simpleText = simpleText.substring(0, 200) + '...'; // Limita tamanho
+                        
+                        addMessage(`<strong>${data.title}</strong>`, 'bot');
+                        addMessage(simpleText, 'bot');
+                        addMessage('Para ver o conteúdo completo com vídeos e links, clique no bloco correspondente na linha do tempo principal.', 'bot');
+                    }
+                }
+                
+                // Volta ao menu principal depois de responder (exceto fluxos aninhados que têm returns)
+                setTimeout(() => {
+                    addMessage('Posso ajudar em algo mais?', 'bot');
+                    showOptions([
+                        { id: 'docs', text: 'Documentos' },
+                        { id: 'fluxo', text: 'Fluxograma' },
+                        { id: 'contatos', text: 'Contatos' },
+                        { id: 'update_sup', text: 'Atualização Supervisor' },
+                        { id: 'humano', text: 'Suporte' }
+                    ]);
+                }, 2500);
+
+            }, 600);
+        }
 
     </script>
 </body>
